@@ -1,0 +1,39 @@
+services:
+  drachtio:
+    image: drachtio/drachtio-server:latest
+    restart: always
+    command:
+      [
+        "drachtio",
+        "--contact", "sip:*:5060;transport=tcp",
+        "--contact", "sip:*:5060;transport=udp",
+        "--contact", "sips:*:5061;transport=tls",
+        "--contact", "sip:*:8080;transport=ws",
+        "--contact", "sips:*:8443;transport=wss",
+        "--external-ip", "${PUBLIC_IP}",
+      ]
+    ports:
+      - "9022:9022/tcp" # drachtio server
+      - "5060:5060/udp" # sip(udp)
+      - "5060:5060/tcp" # sip(tcp)
+      - "5061:5061/tcp" # sips(tls)
+      - "8080:8080/tcp" # ws
+      - "8443:8443/tcp" # wss
+      - "9090:9090/tcp" # metrics
+    environment:
+      - DRACHTIO_LOGLEVEL=debug
+      - DRACHTIO_SOFIA_LOGLEVEL=3
+      - DRACHTIO_ADMIN_ADDRESS=0.0.0.0
+      - DRACHTIO_ADMIN_TCP_PORT=9022
+      - DRACHTIO_SECRET=cymru
+      # - DRACHTIO_ADMIN_TLS_PORT=9023
+      - DRACHTIO_TLS_CERT_FILE=/etc/tls/cert.pem
+      - DRACHTIO_TLS_CHAIN_FILE=/etc/tls/chain.pem
+      - DRACHTIO_TLS_KEY_FILE=/etc/tls/privkey.pem
+      - DRACHTIO_MIN_TLS_VERSION=1.2
+      - DRACHTIO_UDP_MTU=1300
+      - DRACHTIO_PROMETHEUS_SCRAPE_PORT=9090
+    volumes:
+      - ./tls/cert.pem:/etc/tls/cert.pem
+      - ./tls/chain.pem:/etc/tls/chain.pem
+      - ./tls/privkey.pem:/etc/tls/privkey.pem
