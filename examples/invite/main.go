@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/paulgrammer/drachtio"
@@ -140,7 +139,7 @@ func main() {
 	srf.Register(digestAuth.Serve)
 
 	// Run
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
 	go registry.Run(ctx)
